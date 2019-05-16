@@ -27,6 +27,11 @@ variable "cidr_blocks" {
   default     = []
 }
 
+variable "efs_file_system" {
+  default     = ""
+  description = "EFS filesystem id that can be rendered in template_file"
+}
+
 variable "instance_type" {
   description = "EC2 instance type"
   default     = "t2.nano"

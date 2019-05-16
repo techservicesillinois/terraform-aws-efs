@@ -1,3 +1,7 @@
+output "efs_filesystem_dns_name" {
+  value = "${local.filesystem_dns_name}"
+}
+
 output "private_dns" {
   value = "${aws_instance.default.private_dns}"
 }

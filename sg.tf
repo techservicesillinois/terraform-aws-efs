@@ -1,8 +1,3 @@
-# Allow SSH port (22) by default.
-locals {
-  ports = "${sort(distinct(concat(list("22"), var.ports)))}"
-}
-
 resource "aws_security_group" "default" {
   description = "EC2 instance ${var.name} security group"
   name        = "${var.name}"
