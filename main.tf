@@ -25,8 +25,8 @@ resource "aws_efs_file_system" "default" {
 }
 
 resource "aws_efs_mount_target" "default" {
-  count          = "${length(local.subnet_ids)}"
-  file_system_id = "${aws_efs_file_system.default.id}"
-  security_groups= ["${aws_security_group.default.id}"]
-  subnet_id      = "${element(local.subnet_ids, count.index)}"
+  count           = "${length(local.subnet_ids)}"
+  file_system_id  = "${aws_efs_file_system.default.id}"
+  security_groups = ["${aws_security_group.default.id}"]
+  subnet_id       = "${element(local.subnet_ids, count.index)}"
 }

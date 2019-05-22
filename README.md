@@ -6,7 +6,6 @@ This module only supports mount targets within one VPC.
 Example Usage
 -----------------
 
-### Public load balancer
 ```hcl
 module "volume" {
   source = "git@github.com:techservicesillinois/terraform-aws-efs"
