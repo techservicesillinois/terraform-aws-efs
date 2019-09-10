@@ -17,6 +17,20 @@ module "volume" {
   vpc  = "vpc_name"
 }
 ```
+Note that this module uses a Terraform `lifecycle` block with `prevent_destroy`
+set to *true*, because the consequences of an accidental `terraform destroy` 
+on an EFS volume is to wipe out any data stored there.
+
+The Terraform documentation states:
+
+* `prevent_destroy `(bool) - This flag provides extra protection against the
+destruction of a given resource.
+When this flag is set to true, any plan that includes a destroy of this
+resource will return an error message.
+
+Unfortunately, Terraform does not support interpolations in the `lifecycle`
+block, which means that the only way to intentionally destroy the affected
+resource is to do so in the AWS console.
 
 Argument Reference
 -----------------

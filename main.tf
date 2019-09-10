@@ -20,8 +20,11 @@ resource "aws_efs_file_system" "default" {
   encrypted        = "${var.encrypted}"
   performance_mode = "${var.performance_mode}"
   throughput_mode  = "${var.throughput_mode}"
+  tags             = "${merge(map("Name", var.name), var.tags)}"
 
-  tags = "${merge(map("Name", var.name), var.tags)}"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_efs_mount_target" "default" {
