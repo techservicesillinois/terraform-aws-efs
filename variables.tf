@@ -33,3 +33,4 @@ variable "throughput_mode" {
   description = "Throughput mode for the file system (bursting or provisioned)"
   default     = "bursting"
 }
+
