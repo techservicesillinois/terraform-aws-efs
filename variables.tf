@@ -26,6 +26,7 @@ variable "performance_mode" {
 
 variable "tags" {
   description = "Tags to be applied to resources where supported"
+  type        = map(string)
   default     = {}
 }
 
