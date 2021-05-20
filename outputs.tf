@@ -10,8 +10,11 @@ output "dns_name" {
   value = aws_efs_file_system.default.dns_name
 }
 
-output "mount_target_ids" {
-  value = aws_efs_mount_target.default.*.id
+output "mount_targets" {
+  value = {
+    for fsmt in aws_efs_mount_target.default :
+    fsmt.availability_zone_name => fsmt.mount_target_dns_name
+  }
 }
 
 output "client_security_group" {

@@ -71,7 +71,7 @@ clients of the EFS server.
 
 * `fqdn` - The the EFS volume's fully qualified domain name.
 
-* `mount_target_ids` - The IDs of the EFS volume's mount targets.
+* `mount_targets` - A map consisting of a key/value pair wherein each key represents an availability zones (AZ) paired with the EFS volume's mount target ID in the respective AZ.
 
 * `server_security_group` - The name of the security group created for
 the EFS server.
