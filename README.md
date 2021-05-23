@@ -1,6 +1,6 @@
 # efs
 
-[![Build Status](https://drone.techservices.illinois.edu/api/badges/techservicesillinois/terraform-aws-efs/status.svg)](https://drone.techservices.illinois.edu/techservicesillinois/terraform-aws-efs)
+[![Terraform actions status](https://github.com/techservicesillinois/terraform-aws-efs/workflows/terraform/badge.svg)](https://github.com/techservicesillinois/terraform-aws-efs/actions)
 
 Provides an Elastic File System (EFS) volume with mount targets and security groups.
 This module only supports mount targets within one VPC.
