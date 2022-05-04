@@ -4,12 +4,12 @@ variable "name" {
   description = "Name of file system"
 }
 
-variable "tier" {
-  description = "Network tier in which to place EC2 instance"
+variable "subnet_type" {
+  description = "Subnet type (e.g., 'campus', 'private', 'public') for resource placement"
 }
 
 variable "vpc" {
-  description = "Name of VPC to use"
+  description = "Name of VPC for resource placement"
 }
 
 # Optional variables.

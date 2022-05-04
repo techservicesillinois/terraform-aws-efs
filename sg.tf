@@ -1,14 +1,14 @@
 resource "aws_security_group" "default" {
   description = "EFS ${var.name} server security group"
   name        = "efs-${var.name}-server"
-  vpc_id      = data.aws_vpc.selected.id
+  vpc_id      = module.get-subnets.vpc.id
   tags        = merge({ "Name" = var.name }, var.tags)
 }
 
 resource "aws_security_group" "client" {
   description = "EFS ${var.name} client security group"
   name        = "efs-${var.name}-clients"
-  vpc_id      = data.aws_vpc.selected.id
+  vpc_id      = module.get-subnets.vpc.id
   tags        = merge({ "Name" = var.name }, var.tags)
 }
 

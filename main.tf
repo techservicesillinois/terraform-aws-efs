@@ -1,36 +1,22 @@
-locals {
-  subnet_ids = distinct(flatten(data.aws_subnet_ids.selected.*.ids))
+module "get-subnets" {
+  source = "github.com/techservicesillinois/terraform-aws-util//modules/get-subnets?ref=v3.0.4"
+
+  include_subnets_by_az = true
+  subnet_type           = var.subnet_type
+  vpc                   = var.vpc
 }
 
-data "aws_vpc" "selected" {
-  tags = {
-    Name = var.vpc
-  }
-}
-
-# Get subnet IDs of each subnet in selected tier.
-
-data "aws_subnet_ids" "selected" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    Tier = var.tier
-  }
-}
-
-# Get details about each subnet ID previously selected.
-
-data "aws_subnet" "selected" {
-  for_each = data.aws_subnet_ids.selected.ids
-  vpc_id   = data.aws_vpc.selected.id
-  id       = each.key
-}
-
-# Build a map using the AZ as key, and subnet ID as value.
+# Build map used in for_each clause in the definition for each
+# aws_efs_mount_target resource (one per AZ). The map consists of
+# the AZ name as key; the value stored under each key is a single
+# subnet ID name.
+#
+# NOTE: this locals block does NOT support the rare use case
+# wherein >1 subnets are defined in any AZ.
 
 locals {
   subnets = {
-    for id, subnet in data.aws_subnet.selected : subnet.availability_zone => id
+    for az, id in module.get-subnets.subnets_by_az : az => id[0]
   }
 }
 
@@ -40,13 +26,16 @@ resource "aws_efs_file_system" "default" {
   throughput_mode  = var.throughput_mode
   tags             = merge({ "Name" = var.name }, var.tags)
 
+  # Protect against destruction of persistent resource.
+
   lifecycle {
     prevent_destroy = true
   }
 }
 
 resource "aws_efs_mount_target" "default" {
-  for_each        = local.subnets
+  for_each = local.subnets
+
   file_system_id  = aws_efs_file_system.default.id
   security_groups = [aws_security_group.default.id]
   subnet_id       = each.value
