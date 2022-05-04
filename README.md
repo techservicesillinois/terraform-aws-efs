@@ -12,9 +12,9 @@ Example Usage
 module "volume" {
   source = "git@github.com:techservicesillinois/terraform-aws-efs"
 
-  name = "example"
-  tier = "public"
-  vpc  = "vpc_name"
+  name        = "example"
+  subnet_type = "public"
+  vpc         = "vpc_name"
 }
 ```
 Note that this module uses a Terraform `lifecycle` block with `prevent_destroy`
@@ -44,8 +44,7 @@ the module will be used to mount the volume.
 * `vpc` - (Required) The name of the virtual private cloud to be
 associated with the load balancer.
 
-* `tier` - (Required) A subnet tier tag (e.g., public, private,
-nat) to determine subnets to be associated with the load balancer.
+* `subnet_type` - (Required) Subnet type (e.g., 'campus', 'private', 'public') for resource placement.
 
 * `encrypted` - (Optional) Encrypt data on volume at rest. Default: true.
 
