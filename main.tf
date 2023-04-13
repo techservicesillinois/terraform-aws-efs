@@ -6,25 +6,38 @@ module "get-subnets" {
   vpc                   = var.vpc
 }
 
-# Build map used in for_each clause in the definition for each
-# aws_efs_mount_target resource (one per AZ). The map consists of
-# the AZ name as key; the value stored under each key is a single
-# subnet ID name.
-#
 # NOTE: this locals block does NOT support the rare use case
 # wherein >1 subnets are defined in any AZ.
 
 locals {
-  subnets = {
-    for az, id in module.get-subnets.subnets_by_az : az => id[0]
-  }
+  # The enis list is used to apply tags to each mount target's ENI.
+  # Each list entry consists of a map with the availability zone name,
+  # tag key, and tag value as attributes.
+
+  enis = flatten([
+    for az, id in local.subnets : [
+      for key, value in local.tags : {
+        az    = az
+        key   = key
+        value = value
+      }
+    ]
+  ])
+
+  # The subnets map is used to create one aws_efs_mount_target resource
+  # per availability zone. Each map entry uses the availability zone name
+  # as key. The value stored under each key is the corresponding ssubnet
+  # ID name.
+  subnets = { for az, id in module.get-subnets.subnets_by_az : az => id[0] }
+
+  tags = merge({ Name = var.name }, var.tags)
 }
 
 resource "aws_efs_file_system" "default" {
   encrypted        = var.encrypted
   performance_mode = var.performance_mode
   throughput_mode  = var.throughput_mode
-  tags             = merge({ "Name" = var.name }, var.tags)
+  tags             = local.tags
 
   # Protect against destruction of persistent resource.
 
@@ -34,9 +47,19 @@ resource "aws_efs_file_system" "default" {
 }
 
 resource "aws_efs_mount_target" "default" {
-  for_each = local.subnets
-
   file_system_id  = aws_efs_file_system.default.id
   security_groups = [aws_security_group.default.id]
-  subnet_id       = each.value
+
+  for_each  = local.subnets
+  subnet_id = each.value
+}
+
+# Add tags to elastic network interface.
+
+resource "aws_ec2_tag" "default" {
+  for_each = { for t in local.enis : (format("eni:%s:%s", t.az, t.key)) => t }
+
+  resource_id = aws_efs_mount_target.default[each.value.az].network_interface_id
+  key         = each.value.key
+  value       = each.value.value
 }
